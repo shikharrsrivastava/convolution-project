@@ -180,8 +180,12 @@ with tab2:
         f_expr = get_signals(t_sym)[s1_select]
         h_expr = get_signals(t_sym)[s2_select]
         
-        f_np = sp.lambdify(t_sym, f_expr, modules=['numpy', {'Heaviside': lambda x: np.where(x>=0,1,0)}])
-        h_np = sp.lambdify(t_sym, h_expr, modules=['numpy', {'Heaviside': lambda x: np.where(x>=0,1,0)}])
+        discrete_modules = ['numpy', {
+            'Heaviside': lambda x: np.where(x >= 0, 1, 0),
+            'DiracDelta': lambda x: np.where(x == 0, 1, 0)
+        }]
+        f_np = sp.lambdify(t_sym, f_expr, modules=discrete_modules)
+        h_np = sp.lambdify(t_sym, h_expr, modules=discrete_modules)
         
         x_vals = np.array([float(f_np(i)) for i in n_indices])
         h_flipped_shifted = np.array([float(h_np(n_slide - i)) for i in n_indices])
