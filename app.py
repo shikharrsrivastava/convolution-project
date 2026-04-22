@@ -163,6 +163,8 @@ with tab2:
 
         if s1_select == "u(t)" and s2_select == "u(t)":
             y_vals_final = np.where(t_vals_final >= 0, t_vals_final, 0)
+        elif (s1_select == "r(t)" and s2_select == "u(t)") or (s1_select == "u(t)" and s2_select == "r(t)"):
+            y_vals_final = np.where(t_vals_final >= 0, 0.5 * t_vals_final**2, 0)
         else:
             dt = t_vals_final[1] - t_vals_final[0]
             f_arr = np.array([float(f_func(v)) for v in t_vals_final])
