@@ -160,11 +160,14 @@ with tab2:
         st.markdown("---")
         st.subheader("3. Final Convolution Graph y(t)")
         t_vals_final = np.linspace(-10, 10, 800)
-        
-        dt = t_vals_final[1] - t_vals_final[0]
-        f_arr = np.array([float(f_func(v)) for v in t_vals_final])
-        h_arr_t0 = np.array([float(h_func(0, v)) for v in t_vals_final])
-        y_vals_final = np.convolve(f_arr, h_arr_t0, mode='same') * dt
+
+        if s1_select == "u(t)" and s2_select == "u(t)":
+            y_vals_final = np.where(t_vals_final >= 0, t_vals_final, 0)
+        else:
+            dt = t_vals_final[1] - t_vals_final[0]
+            f_arr = np.array([float(f_func(v)) for v in t_vals_final])
+            h_arr_t0 = np.array([float(h_func(0, v)) for v in t_vals_final])
+            y_vals_final = np.convolve(f_arr, h_arr_t0, mode='same') * dt
 
         fig_final = go.Figure()
         fig_final.add_trace(go.Scatter(x=t_vals_final, y=y_vals_final, mode='lines', name='y(t)', line=dict(color='#ff007f', width=4)))
