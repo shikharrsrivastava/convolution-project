@@ -228,7 +228,7 @@ with tab2:
         st.subheader("3. Final Convolution Sequence y[n]")
         y_full_discrete = np.convolve([float(f_np(i)) for i in np.arange(-20, 20)], [float(h_np(i)) for i in np.arange(-20, 20)], mode='same')
         
-        nz_indices = np.nonzero(y_full_discrete)[0]
+        nz_indices = np.where(np.abs(y_full_discrete) > 1e-10)[0]
         if len(nz_indices) > 0:
             start, end = nz_indices[0], nz_indices[-1]
             seq_vals = y_full_discrete[start:end+1]
@@ -240,6 +240,8 @@ with tab2:
                 else:
                     seq_parts.append(f"{val:.2g}")
             st.latex(r"y[n] = \{ \dots, " + ", ".join(seq_parts) + r", \dots \}")
+        else:
+            st.latex(r"y[n] = 0 \quad \text{(All zeros)}")
             
         fig_final_d = go.Figure()
         fig_final_d.add_trace(go.Scatter(x=np.arange(-20, 20), y=y_full_discrete, mode='markers', marker=dict(color='#ff007f', size=10)))
