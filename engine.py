@@ -74,6 +74,7 @@ def get_smart_analytical_result(s1, s2, f_calc, h_calc, tau):
         # Unit Step Combinations
         ("u(t)", "u(t)"): r"y(t) = r(t) = t \cdot u(t)",
         ("r(t)", "u(t)"): r"y(t) = \frac{1}{2}t^2 u(t)",
+        ("exp(-t)u(t)", "r(t)"): r"y(t) = (t - 1 + e^{-t})u(t)",
         ("sgn(t)", "u(t)"): r"y(t) = |t|",
         ("exp(-t)u(t)", "u(t)"): r"y(t) = (1 - e^{-t})u(t)",
         ("cos(t)u(t)", "u(t)"): r"y(t) = \sin(t)u(t)",
