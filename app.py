@@ -159,9 +159,9 @@ with tab2:
 
         st.markdown("---")
         st.subheader("3. Final Convolution Graph y(t)")
-        t_vals_final = np.linspace(-6, 6, 400)
+        t_vals_final = np.linspace(-10, 10, 800)
         
-        dt = 12.0 / 400.0
+        dt = t_vals_final[1] - t_vals_final[0]
         f_arr = np.array([float(f_func(v)) for v in t_vals_final])
         h_arr_t0 = np.array([float(h_func(0, v)) for v in t_vals_final])
         y_vals_final = np.convolve(f_arr, h_arr_t0, mode='same') * dt
