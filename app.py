@@ -8,346 +8,88 @@ from engine import get_continuous_convolution, get_signals
 # --- PAGE CONFIGURATION ---
 st.set_page_config(page_title="SAS Convolution Project | Shikhar Srivastava", layout="wide", page_icon="📡", initial_sidebar_state="expanded")
 
-# --- CUSTOM CSS FOR PREMIUM UI ---
-st.markdown("""
-    <style>
-        /* Hide Streamlit default header and footer for a clean app feel */
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        header {visibility: hidden;}
-        
-        /* Main background with gradient */
-        .main { 
-            background: linear-gradient(135deg, #0a0e1a 0%, #0f1419 50%, #0a0e1a 100%);
-            background-attachment: fixed;
-        }
-        
-        /* Logo header styling */
-        .logo-header {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 25px;
-            background: linear-gradient(135deg, rgba(0, 209, 255, 0.05) 0%, rgba(0, 145, 217, 0.03) 100%);
-            padding: 20px 30px;
-            border-radius: 14px;
-            border: 1px solid rgba(0, 209, 255, 0.15);
-            margin-bottom: 35px;
-        }
-        .logo-header img {
-            max-width: 90px;
-            height: auto;
-            filter: drop-shadow(0 4px 8px rgba(0, 209, 255, 0.1));
-            flex-shrink: 0;
-        }
-        .header-text h1 {
-            margin: 0;
-            color: #00d1ff;
-            font-size: 1.6rem;
-            font-weight: 800;
-            letter-spacing: 0.3px;
-            text-align: center;
-        }
-        .header-text p {
-            margin: 5px 0 0 0;
-            color: #58a6ff;
-            font-size: 0.95rem;
-            font-weight: 500;
-            text-align: center;
-        }
-        
-        /* Main Title Styling */
-        .main-title {
-            text-align: center;
-            background: linear-gradient(135deg, #00d1ff 0%, #0091d9 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 20px rgba(0, 209, 255, 0.1);
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #58a6ff;
-            font-size: 1.3rem;
-            font-weight: 500;
-            margin-bottom: 30px;
-            letter-spacing: 0.5px;
-        }
-        
-        /* Institute Header Styling - Enhanced */
-        .institute-header {
-            background: linear-gradient(135deg, rgba(0, 209, 255, 0.08) 0%, rgba(0, 145, 217, 0.05) 100%);
-            padding: 40px;
-            border-radius: 18px;
-            text-align: center;
-            border: 2px solid rgba(0, 209, 255, 0.2);
-            box-shadow: 0 8px 32px rgba(0, 209, 255, 0.08), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-            margin-bottom: 40px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        .institute-header:hover {
-            border-color: rgba(0, 209, 255, 0.4);
-            box-shadow: 0 12px 48px rgba(0, 209, 255, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.05);
-        }
-        .institute-header h2 {
-            margin: 0 0 12px 0;
-            background: linear-gradient(135deg, #e5b300 0%, #ffd700 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 800;
-            font-size: 2rem;
-            letter-spacing: 0.5px;
-        }
-        .institute-header p {
-            margin: 0;
-            color: #8b949e;
-            font-size: 1.1rem;
-            font-weight: 500;
-        }
+# --- SIDEBAR: STRICTLY FOR BRANDING ---
+try:
+    st.sidebar.image("logo.png", use_container_width=True)
+except:
+    st.sidebar.markdown("<h2 style='text-align: center; color: #e5b300;'>IIIT-NR</h2>", unsafe_allow_html=True)
 
-        /* Custom Cards - Enhanced with modern design */
-        .custom-card-blue {
-            background: linear-gradient(135deg, rgba(22, 27, 34, 0.9) 0%, rgba(13, 17, 23, 0.9) 100%);
-            padding: 32px;
-            border-radius: 16px;
-            border: 2px solid rgba(0, 209, 255, 0.15);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(0, 209, 255, 0.1);
-            height: 100%;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 5px solid #00d1ff;
-        }
-        .custom-card-blue:hover {
-            border-color: rgba(0, 209, 255, 0.3);
-            box-shadow: 0 12px 32px rgba(0, 209, 255, 0.15), inset 0 1px 1px rgba(0, 209, 255, 0.1);
-            transform: translateY(-4px);
-        }
-        
-        .custom-card-green {
-            background: linear-gradient(135deg, rgba(22, 27, 34, 0.9) 0%, rgba(13, 17, 23, 0.9) 100%);
-            padding: 32px;
-            border-radius: 16px;
-            border: 2px solid rgba(46, 160, 67, 0.15);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(46, 160, 67, 0.1);
-            height: 100%;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border-left: 5px solid #2ea043;
-        }
-        .custom-card-green:hover {
-            border-color: rgba(46, 160, 67, 0.3);
-            box-shadow: 0 12px 32px rgba(46, 160, 67, 0.15), inset 0 1px 1px rgba(46, 160, 67, 0.1);
-            transform: translateY(-4px);
-        }
-        
-        .card-title {
-            color: #c9d1d9;
-            font-size: 1.4rem;
-            margin-bottom: 20px;
-            font-weight: 700;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 15px;
-            letter-spacing: 0.3px;
-        }
-        .card-text {
-            color: #8b949e;
-            font-size: 1.05rem;
-            line-height: 1.8;
-        }
-        
-        .highlight { 
-            color: #58a6ff; 
-            font-weight: 700;
-            display: inline-block;
-        }
-        
-        /* About section styling */
-        .about-section {
-            background: linear-gradient(135deg, rgba(0, 209, 255, 0.05) 0%, rgba(46, 160, 67, 0.05) 100%);
-            padding: 40px;
-            border-radius: 16px;
-            border: 2px solid rgba(200, 217, 255, 0.1);
-            margin-top: 30px;
-            backdrop-filter: blur(10px);
-        }
-        .about-section h3 {
-            color: #58a6ff;
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            letter-spacing: 0.5px;
-        }
-        .about-section p {
-            color: #c9d1d9;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            margin-bottom: 20px;
-        }
-        .about-section ul li {
-            color: #8b949e;
-            font-size: 1.05rem;
-            line-height: 2;
-            margin-bottom: 12px;
-        }
-        .about-section ul li strong {
-            color: #c9d1d9;
-            font-weight: 700;
-        }
-        
-        /* CTA text styling */
-        .cta-section {
-            background: linear-gradient(135deg, rgba(0, 209, 255, 0.1) 0%, rgba(0, 145, 217, 0.08) 100%);
-            padding: 25px;
-            border-radius: 12px;
-            border-left: 4px solid #58a6ff;
-            margin-top: 30px;
-            color: #c9d1d9;
-        }
-        .cta-section strong {
-            color: #00d1ff;
-            font-weight: 700;
-        }
-        
-        /* Section divider enhancement */
-        hr {
-            border-color: rgba(48, 54, 61, 0.5) !important;
-            margin: 40px 0 !important;
-        }
-    </style>
-""", unsafe_allow_html=True)
+st.sidebar.markdown("---")
+st.sidebar.info("""
+**SAS Mini-Project**
+* **By:** Shikhar Srivastava (251000081)
+* **Guide:** Dr. Shrivishal Tripathi
+""")
+st.sidebar.markdown("---")
+st.sidebar.write("Use the **Calculator & Visualizer** tab to interact with the signals.")
 
-# --- SIDEBAR NAVIGATION WITH LOGO ---
-# SIDEBAR HIDDEN - Signal selection moved to Calculator tab
-st.sidebar.markdown("""
-    <style>
-        /* Sidebar styling */
-        [data-testid="stSidebar"] {
-            display: none;
-        }
-    </style>
-""", unsafe_allow_html=True)
+# Generate Signal List
+signals_list = list(get_signals(sp.symbols('t')).keys())
 
 # --- MAIN TABS ---
 tab1, tab2, tab3 = st.tabs(["🏠 Project Home", "🚀 Calculator & Visualizer", "📚 Full Theory & Properties"])
 
 # ==========================================
-# TAB 1: PREMIUM PROJECT HOMEPAGE
+# TAB 1: PROJECT HOMEPAGE
 # ==========================================
 with tab1:
-    # Logo and College Name Header at the top
-    col_logo, col_header = st.columns([0.12, 1], gap="medium")
+    st.markdown("<h1 style='text-align: center; color: #00d1ff; margin-bottom: 0px; font-size: 3rem;'>Signals & Systems (SAS) Project</h1>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align: center; color: #8b949e; margin-top: 5px; font-weight: 400;'>Interactive Convolution Visualizer & Calculator</h3>", unsafe_allow_html=True)
     
-    with col_logo:
-        if os.path.exists("logo.png"):
-            st.markdown("<div style='display: flex; align-items: center; height: 100%;'></div>", unsafe_allow_html=True)
-            st.image("logo.png", width=85)
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    with col_header:
-        st.markdown("""
-        <div style='display: flex; flex-direction: column; justify-content: center; height: 100%; padding: 10px 0;'>
-            <h2 style='margin: 0 0 8px 0; color: #00d1ff; font-size: 1.5rem; font-weight: 800; line-height: 1.2;'>IIIT Naya Raipur</h2>
-            <p style='margin: 0; color: #58a6ff; font-size: 0.9rem; font-weight: 500; line-height: 1.3;'>Dr. Shyama Prasad Mukherjee International Institute</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("<hr style='margin: 25px 0; border-color: rgba(48, 54, 61, 0.5);'>", unsafe_allow_html=True)
-    
-    st.markdown("<div class='main-title'>Signals & Systems Convolution Project</div>", unsafe_allow_html=True)
-    st.markdown("<div class='subtitle'>Interactive Convolution Visualizer & Advanced Calculator</div>", unsafe_allow_html=True)
-    
-    st.markdown("")
-    
-    # Premium Institute Header
     st.markdown("""
-        <div class='institute-header'>
-            <h2>Dr. Shyama Prasad Mukherjee International Institute of Information Technology</h2>
-            <p>Naya Raipur (IIIT-NR) | A Centre of Excellence</p>
+        <div style='background: linear-gradient(145deg, #161b22, #0d1117); padding: 30px; border-radius: 15px; text-align: center; border: 1px solid #30363d; box-shadow: 0 10px 20px rgba(0,0,0,0.5); margin-bottom: 30px;'>
+            <h2 style='margin: 0; color: #e5b300; font-weight: 700; font-size: 1.8rem;'>Dr. Shyama Prasad Mukherjee International Institute of Information Technology, Naya Raipur</h2>
+            <p style='margin: 8px 0 0 0; color: #8b949e; font-size: 1.2rem;'>(IIIT Naya Raipur)</p>
         </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("")
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    # Custom HTML Cards for Credentials
     col_student, col_guide = st.columns(2)
     
     with col_student:
-        st.markdown("""
-        <div class='custom-card-blue'>
-            <div class='card-title'>🎓 Submitted By</div>
-            <div class='card-text'>
-                <strong>Name:</strong> <span class='highlight'>Shikhar Srivastava</span><br><br>
-                <strong>Branch:</strong> <span class='highlight'>Computer Science & Engineering</span><br><br>
-                <strong>Roll Number:</strong> <span class='highlight'>251000081</span>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("""
+        #### 🎓 Submitted By
+        **Name:** Shikhar Srivastava  
+        **Batch:** Computer Science and Engineering (CSE)  
+        **Roll Number:** 251000081
+        """)
         
     with col_guide:
-        st.markdown("""
-        <div class='custom-card-green'>
-            <div class='card-title'>👨‍🏫 Under the Guidance Of</div>
-            <div class='card-text'>
-                <strong>Faculty:</strong> <span class='highlight'>Dr. Shrivishal Tripathi</span><br><br>
-                <strong>Designation:</strong> Associate Professor<br><br>
-                <strong>Department:</strong> Electronics & Communication Engineering
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.success("""
+        #### 👨‍🏫 Under the Guidance Of
+        **Dr. Shrivishal Tripathi** Associate Professor  
+        Department of Electronics and Communication Engineering (ECE)
+        """)
         
-    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown("---")
+    st.write("""
+    ### About This Project
+    Welcome to the Convolution Lab. This computational tool was developed to bridge the gap between abstract mathematical theory and visual intuition in Signals and Systems.
     
-    st.markdown("""
-    <div class='about-section'>
-        <h3>✨ About This Project</h3>
-        <p>
-        Welcome to the Interactive Convolution Laboratory. This advanced computational tool bridges the critical gap between abstract mathematical theory and intuitive visual understanding in Signals and Systems analysis.
-        </p>
-        <ul>
-            <li><strong>🧮 Automated Mathematical Solving:</strong> Precisely computes continuous convolution integrals with symbolic mathematics, formatting results into standard engineering notation using unit steps u(t) and linear ramps r(t).</li>
-            <li><strong>📊 Discrete-Time Sequence Analysis:</strong> Dynamically generates step-by-step product sequences for y[n] with exact numerical indices and overlapping calculations.</li>
-            <li><strong>🎬 Interactive Sliding Visualizer:</strong> Real-time interactive sliders demonstrating the mathematical "fold, shift, multiply, integrate/sum" process with instant visual feedback.</li>
-            <li><strong>📈 Publication-Ready Graphing:</strong> Professional Plotly visualizations suitable for academic papers and presentations with customizable ranges and precision.</li>
-        </ul>
-    </div>
-    
-    <div class='cta-section'>
-        <strong>🚀 Getting Started:</strong> Use the <strong>Configuration</strong> panel on the left sidebar to select your domain (continuous or discrete time) and choose your input and impulse response signals. Then navigate to the <strong>Calculator & Visualizer</strong> tab to explore the convolution operation interactively.
-    </div>
-    """, unsafe_allow_html=True)
+    * **Automated Mathematical Solving:** Computes continuous convolution integrals and formats them precisely into standard engineering notation (using unit steps $u(t)$ and ramps $r(t)$).
+    * **Discrete-Time Summations:** Dynamically generates step-by-step product sequences for $y[n]$ with exact numerical overlaps.
+    * **Sliding Visualizer:** Provides interactive, draggable sliders to watch the mathematical "fold, shift, and multiply" process happen in real-time.
+    """)
 
 # ==========================================
 # TAB 2: CALCULATOR & VISUALIZER
 # ==========================================
 with tab2:
-    # Signal Configuration Section
-    st.markdown("<h2 style='color: #00d1ff; font-weight: 800; font-size: 2rem; letter-spacing: 0.5px;'>⚙️ Configuration & Signal Selection</h2>", unsafe_allow_html=True)
-    
-    config_col1, config_col2 = st.columns([1, 2], gap="large")
-    
-    with config_col1:
-        st.markdown("<h4 style='color: #58a6ff; font-weight: 700; margin-bottom: 15px;'>📊 Domain</h4>", unsafe_allow_html=True)
-        domain = st.radio("", ["Continuous-Time (t)", "Discrete-Time [n]"], label_visibility="collapsed")
-    
-    with config_col2:
-        st.markdown("<h4 style='color: #58a6ff; font-weight: 700; margin-bottom: 15px;'>📥 Select Signals</h4>", unsafe_allow_html=True)
-        sig_col1, sig_col2 = st.columns(2, gap="medium")
-        signals_list = list(get_signals(sp.symbols('t')).keys())
+    # --- CONTROLS FRONT AND CENTER ---
+    st.markdown("### ⚙️ Signal Configuration")
+    ctrl1, ctrl2, ctrl3 = st.columns(3)
+    with ctrl1:
+        domain = st.radio("Domain Selection", ["Continuous-Time (t)", "Discrete-Time [n]"])
+    with ctrl2:
+        s1_select = st.selectbox("Select Input Signal f", signals_list, index=7)
+    with ctrl3:
+        s2_select = st.selectbox("Select Impulse Response h", signals_list, index=5)
         
-        with sig_col1:
-            s1_select = st.selectbox("Input Signal f(t) / f[n]", signals_list, index=7)
-        with sig_col2:
-            s2_select = st.selectbox("Response h(t) / h[n]", signals_list, index=5)
-    
     st.markdown("---")
-    st.markdown("<h2 style='color: #00d1ff; font-weight: 800; font-size: 2rem; letter-spacing: 0.5px;'>🔍 Convolution Calculator & Visualizer</h2>", unsafe_allow_html=True)
-    st.markdown("---")
+    st.subheader("1. Input Signals Preview")
     p1, p2 = st.columns(2)
     t_plot = np.linspace(-5, 5, 500)
     n_plot = np.arange(-5, 6)
@@ -379,7 +121,7 @@ with tab2:
     if domain == "Continuous-Time (t)":
         math_result, formatted_result, f_disp, h_disp = get_continuous_convolution(s1_select, s2_select)
         
-        st.markdown("<h3 style='color: #c9d1d9; font-size: 1.4rem; font-weight: 700; margin-top: 25px;'>2. Mathematical Steps</h3>", unsafe_allow_html=True)
+        st.subheader("2. Mathematical Steps")
         st.markdown("**Step 1: Signal Definitions**")
         st.latex(rf"f(\tau) = {f_disp}")
         st.latex(rf"h(t-\tau) = {h_disp}")
@@ -391,7 +133,7 @@ with tab2:
         st.latex(formatted_result)
         
         st.markdown("---")
-        st.markdown("<h3 style='color: #c9d1d9; font-size: 1.4rem; font-weight: 700; margin-top: 25px;'>3. Interactive Sliding Visualizer</h3>", unsafe_allow_html=True)
+        st.subheader("Interactive Sliding Visualizer")
         t_slide = st.slider("Shift value (t)", -5.0, 5.0, 0.0, 0.1)
         tau_range = np.linspace(-7, 7, 500)
         
@@ -416,7 +158,7 @@ with tab2:
         st.plotly_chart(fig_slide, use_container_width=True, key="slide_cont")
 
         st.markdown("---")
-        st.markdown("<h3 style='color: #c9d1d9; font-size: 1.4rem; font-weight: 700; margin-top: 25px;'>4. Final Convolution Graph y(t)</h3>", unsafe_allow_html=True)
+        st.subheader("3. Final Convolution Graph y(t)")
         t_vals_final = np.linspace(-6, 6, 400)
         
         dt = 12.0 / 400.0
@@ -430,7 +172,7 @@ with tab2:
         st.plotly_chart(fig_final, use_container_width=True, key="final_cont_graph")
 
     else:
-        st.markdown("<h3 style='color: #c9d1d9; font-size: 1.4rem; font-weight: 700; margin-top: 25px;'>2. Discrete Convolution Textual Steps</h3>", unsafe_allow_html=True)
+        st.markdown("**Discrete Convolution Textual Steps**")
         n_slide = st.slider("Select current n to see step-by-step summation calculation", -10, 10, 0)
         n_indices = np.arange(-15, 16)
         
@@ -474,7 +216,7 @@ with tab2:
         st.plotly_chart(fig_disc, use_container_width=True, key="slide_disc")
         
         st.markdown("---")
-        st.markdown("<h3 style='color: #c9d1d9; font-size: 1.4rem; font-weight: 700; margin-top: 25px;'>3. Final Convolution Sequence y[n]</h3>", unsafe_allow_html=True)
+        st.subheader("3. Final Convolution Sequence y[n]")
         y_full_discrete = np.convolve([float(f_np(i)) for i in np.arange(-20, 20)], [float(h_np(i)) for i in np.arange(-20, 20)], mode='same')
         
         nz_indices = np.nonzero(y_full_discrete)[0]
@@ -501,10 +243,10 @@ with tab2:
 # TAB 3: MASSIVE THEORY EXPANSION (CTS & DTS)
 # ==========================================
 with tab3:
-    st.markdown("<h2 style='color: #00d1ff; font-weight: 800; font-size: 2rem; letter-spacing: 0.5px;'>📚 Comprehensive Theory of Convolution</h2>", unsafe_allow_html=True)
+    st.header("📚 Comprehensive Theory of Convolution")
     st.markdown("---")
     
-    st.markdown("<h3 style='color: #58a6ff; font-size: 1.3rem; font-weight: 700;'>🎬 Recommended Video Tutorials</h3>", unsafe_allow_html=True)
+    st.subheader("🎬 Recommended Video Tutorials")
     st.write("Visualizing convolution is often the hardest part. Check out these highly-rated conceptual explanations:")
     v_col1, v_col2 = st.columns(2)
     with v_col1:
@@ -516,7 +258,7 @@ with tab3:
 
     st.markdown("---")
     
-    st.markdown("<h3 style='color: #58a6ff; font-size: 1.3rem; font-weight: 700;'>🧠 What is Convolution?</h3>", unsafe_allow_html=True)
+    st.subheader("🧠 What is Convolution?")
     st.write("""
     In Signals and Systems, **Convolution** is a mathematical operation that expresses how the shape of one signal is modified by another. 
     It is the fundamental equation for determining the output of a **Linear Time-Invariant (LTI)** system. 
@@ -543,7 +285,7 @@ with tab3:
         st.latex(r"y[n] = x[n] * h[n] = \sum_{k=-\infty}^{\infty} x[k]h[n-k]")
 
     st.markdown("---")
-    st.markdown("<h3 style='color: #58a6ff; font-size: 1.3rem; font-weight: 700;'>🔑 Core Mathematical Properties</h3>", unsafe_allow_html=True)
+    st.subheader("🔑 Core Mathematical Properties")
     
     prop1, prop2, prop3 = st.columns([1, 2, 2])
     

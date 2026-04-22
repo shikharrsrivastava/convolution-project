@@ -66,7 +66,7 @@ def get_smart_analytical_result(s1, s2, f_calc, h_calc, tau):
         ("rect(t)", "rect(t)"): r"y(t) = tri(t) = r(t+1) - 2r(t) + r(t-1)",
         ("rect(t)", "u(t)"): r"y(t) = r(t + 0.5) - r(t - 0.5)",
         ("rect(t)", "sgn(t)"): r"y(t) = |t + 0.5| - |t - 0.5|",
-        ("rect(t)", "r(t)"): r"y(t) = \frac{1}{2}(t+0.5)^2 u(t+0.5) - \frac{1}{2}(t-0.5)^2 u(t-0.5)",
+        ("r(t)", "rect(t)"): r"y(t) = \frac{1}{2}(t+0.5)^2 u(t+0.5) - \frac{1}{2}(t-0.5)^2 u(t-0.5)", # <- FIXED KEY SORTING HERE
         ("exp(-t)u(t)", "rect(t)"): r"y(t) = (1 - e^{-(t+0.5)})u(t+0.5) - (1 - e^{-(t-0.5)})u(t-0.5)",
         ("cos(t)u(t)", "rect(t)"): r"y(t) = \sin(t+0.5)u(t+0.5) - \sin(t-0.5)u(t-0.5)",
         ("rect(t)", "sin(t)u(t)"): r"y(t) = (1-\cos(t+0.5))u(t+0.5) - (1-\cos(t-0.5))u(t-0.5)",
